@@ -7,7 +7,7 @@ namespace HotelListing.API.Data
     {
         public HotelListingDbContext(DbContextOptions options) : base(options)
         {
-
+            
         }
 
         public DbSet<Hotel> Hotels { get; set; }
@@ -68,11 +68,15 @@ namespace HotelListing.API.Data
     }
 
     public class HotelListingDbContextFactory : IDesignTimeDbContextFactory<HotelListingDbContext>
-    {
+    { 
         public HotelListingDbContext CreateDbContext(string[] args)
         {
+            var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
+            var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString3");
+
             var optionsBuilder = new DbContextOptionsBuilder<HotelListingDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=LAPTOP-D32HSJG2;Database=HotelListingAPIDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer(connectionString);
 
             return new HotelListingDbContext(optionsBuilder.Options);
         }
