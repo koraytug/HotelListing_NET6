@@ -39,7 +39,7 @@ namespace HotelListing.API.Controllers
                 return NotFound();
             }
 
-            return country;
+            return Ok(country);
         }
 
         // PUT: api/Countries/5
