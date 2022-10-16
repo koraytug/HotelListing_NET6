@@ -4,7 +4,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString2");
 builder.Services.AddDbContext<HotelListingDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
