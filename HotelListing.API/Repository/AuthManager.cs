@@ -10,12 +10,31 @@ namespace HotelListing.API.Repository
     {
         private readonly IMapper _mapper;
         private readonly UserManager<ApiUser> _userManager;
+        private ApiUser _user;
 
         public AuthManager(IMapper mapper, UserManager<ApiUser> userManager)
         {
             this._mapper = mapper;
             this._userManager = userManager;
         }
+
+        public async Task<bool> Login(LoginDto loginDto)
+        {
+            _user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (_user is null)
+            {
+                return default;
+            }
+
+            bool isValidCredentials = await _userManager.CheckPasswordAsync(_user, loginDto.Password);
+
+            if (!isValidCredentials)
+            {
+                return default;
+            }
+            return true;
+        }
+
         public async Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto)
         {
             var user = _mapper.Map<ApiUser>(userDto);
