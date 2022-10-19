@@ -28,9 +28,9 @@ namespace HotelListing.API.Controllers
 
             if (errors.Any())
             {
-                foreach(var error in errors)
+                foreach (var error in errors)
                 {
-                    ModelState.AddModelError(error.Code,error.Description);
+                    ModelState.AddModelError(error.Code, error.Description);
                 }
                 return BadRequest(apiUserDto);
             }
@@ -46,14 +46,14 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Register([FromBody] LoginDto loginDto)
         {
-            var isValidUser = await _authManager.Login(loginDto);
+            var authResponse = await _authManager.Login(loginDto);
 
-            if (!isValidUser)
+            if (authResponse == null)
             {
                 return Unauthorized();
             }
 
-            return Ok();
+            return Ok(authResponse);
         }
     }
 }
