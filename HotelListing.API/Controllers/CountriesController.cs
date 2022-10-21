@@ -5,6 +5,7 @@ using HotelListing.API.Models.Country;
 using AutoMapper;
 using HotelListing.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using HotelListing.API.Exception;
 
 namespace HotelListing.API.Controllers
 {
@@ -16,7 +17,7 @@ namespace HotelListing.API.Controllers
         private readonly ICountriesRepository _countriesRepository;
         private readonly ILogger<CountriesController> _logger;
 
-        public CountriesController( IMapper mapper, ICountriesRepository countriesRepository,ILogger<CountriesController> logger)
+        public CountriesController(IMapper mapper, ICountriesRepository countriesRepository, ILogger<CountriesController> logger)
         {
             this._mapper = mapper;
             this._countriesRepository = countriesRepository;
@@ -28,7 +29,7 @@ namespace HotelListing.API.Controllers
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await _countriesRepository.GetAllAsync();
-            var records =   _mapper.Map<List<GetCountryDto>>(countries);  
+            var records = _mapper.Map<List<GetCountryDto>>(countries);
             return Ok(records);
         }
 
@@ -43,8 +44,9 @@ namespace HotelListing.API.Controllers
 
             if (country == null)
             {
-                _logger.LogWarning($"No Record found in {nameof(GetCountry)} with Id: {id}");
-                return NotFound();
+                //_logger.LogWarning($"No Record found in {nameof(GetCountry)} with Id: {id}");
+                //return NotFound();
+                throw new NotFoundException(nameof(GetCountry), id);
             }
 
             var countyDto = _mapper.Map<CountryDto>(country);
@@ -72,7 +74,7 @@ namespace HotelListing.API.Controllers
                 return NotFound();
             }
 
-            _mapper.Map(updateCountryDto,country);
+            _mapper.Map(updateCountryDto, country);
 
             try
             {
@@ -98,7 +100,7 @@ namespace HotelListing.API.Controllers
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountry)
-        { 
+        {
             var country = _mapper.Map<Country>(createCountry);
 
             await _countriesRepository.AddAsync(country);
@@ -108,15 +110,15 @@ namespace HotelListing.API.Controllers
 
         // DELETE: api/Countries/5
         [HttpDelete("{id}")]
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
             var country = await _countriesRepository.GetAsync(id);
             if (country == null)
             {
-                return NotFound();
+                throw new NotFoundException(nameof(GetCountry), id);
             }
-             
+
             await _countriesRepository.DeleteAsync(id);
 
             return NoContent();
